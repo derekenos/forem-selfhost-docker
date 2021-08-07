@@ -58,7 +58,7 @@ RUN cp inventory/example/setup.yml inventory/forem/setup.yml
 # Inject configuration variables specified via build args into setup.yml
 RUN sed -i \
     -e "s/\(forem_domain_name:\) REPLACEME/\1 $FOREM_DOMAIN_NAME/" \
-    -e "s/\(forem_subdomain_name:\) REPLACEME/\1 $FOREM_SUBDOMAIN_NAME/" \
+    -e "s/\(forem_subdomain_name:\) .*/\1 $FOREM_SUBDOMAIN_NAME/" \
     -e "s/\(default_email:\) REPLACEME/\1 $FOREM_DEFAULT_EMAIL/" \
     inventory/forem/setup.yml
 
