@@ -18,3 +18,5 @@ RUN rm doctl-1.62.0-linux-amd64.tar.gz
 
 # Init doctl with the access token
 RUN --mount=type=secret,id=do-access-token doctl auth init --access-token `sudo cat /run/secrets/do-access-token`
+
+CMD ["/bin/bash", "-l", "-c", "ansible-playbook -i inventory/forem/setup.yml playbooks/providers/digitalocean.yml"]
