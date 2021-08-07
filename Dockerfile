@@ -83,16 +83,4 @@ RUN sed -i 's#vault_imgproxy_salt: REPLACEME#echo -n $(xxd -g 2 -l 64 -p /dev/ra
 RUN sed -i 's/vault_forem_postgres_password: REPLACEME/echo -n $(pwgen -1 128) | $VAULT_CMD encrypt_string --stdin-name vault_forem_postgres_password | sed "s#^#          #"/e' \
     inventory/forem/setup.yml
 
-
-# #### Digital Ocean stuff BEGIN ####
-
-# Download and install doctl
-RUN curl -s -L https://github.com/digitalocean/doctl/releases/download/v1.62.0/doctl-1.62.0-linux-amd64.tar.gz -O
-RUN tar xf doctl-1.62.0-linux-amd64.tar.gz
-RUN sudo mv doctl /usr/local/bin
-RUN rm doctl-1.62.0-linux-amd64.tar.gz
-
-#### Digital Ocean stuff END ####
-
-
 CMD ["/bin/bash"]

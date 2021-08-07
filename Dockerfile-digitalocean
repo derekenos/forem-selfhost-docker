@@ -1,0 +1,20 @@
+# syntax=docker/dockerfile-upstream:master-experimental
+# ^ required to make --mount RUN arg work
+# Build using: DOCKER_BUILDKIT=1 docker build --ssh default ...
+# See here for info about mount uid and mode args: https://github.com/moby/buildkit/issues/760
+
+FROM forem-selfhost
+
+# See: https://github.com/forem/selfhost#setup-1
+
+# Install the DigitalOcean Ansible collection
+RUN /bin/bash -l -c 'ansible-galaxy collection install -r requirements.yml'
+
+# Download and install doctl
+RUN curl -s -L https://github.com/digitalocean/doctl/releases/download/v1.62.0/doctl-1.62.0-linux-amd64.tar.gz -O
+RUN tar xf doctl-1.62.0-linux-amd64.tar.gz
+RUN sudo mv doctl /usr/local/bin
+RUN rm doctl-1.62.0-linux-amd64.tar.gz
+
+# Init doctl with the access token
+RUN --mount=type=secret,id=do-access-token doctl auth init --access-token `sudo cat /run/secrets/do-access-token`

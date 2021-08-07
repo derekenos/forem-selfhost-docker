@@ -1,5 +1,5 @@
 
-build-docker-image:
+build-forem-selfhost:
 	@docker build \
 	--build-arg "DOCKER_USER=`id -un`" \
 	--build-arg "DOCKER_UID=`id -u`" \
@@ -8,4 +8,10 @@ build-docker-image:
 	--build-arg "FOREM_SUBDOMAIN_NAME=" \
 	--build-arg "FOREM_DEFAULT_EMAIL=" \
 	. \
-	-t forem-deploy
+	-t forem-selfhost
+
+build-forem-selfhost-digitalocean:
+	@DOCKER_BUILDKIT=1 docker build \
+	-f Dockerfile-digitalocean . \
+	--secret id=do-access-token,src=do-access-token \
+	-t forem-selfhost-digitalocean
