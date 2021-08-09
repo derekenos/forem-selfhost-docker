@@ -8,29 +8,39 @@ ARG FOREM_DOMAIN_NAME
 ARG FOREM_SUBDOMAIN_NAME
 ARG FOREM_DEFAULT_EMAIL
 
-# Assert that all build args have been specified.
+# Assert that all required build args have been specified.
+# Note that it's perfectly valid to have a blank/omitted subdomain.
 RUN echo "verify required --build-arg(s) were specified" \
     && test -n "$DOCKER_USER" \
     && test -n "$DOCKER_UID" \
     && test -n "$DOCKER_GID" \
     && test -n "$FOREM_DOMAIN_NAME" \
-    && test -n "$FOREM_SUBDOMAIN_NAME" \
     && test -n "$FOREM_DEFAULT_EMAIL"
 
+# Install the default requirements:
+# https://github.com/forem/selfhost#requirements
 RUN dnf install -y \
     git \
     python3 \
     python3-pip \
     butane \
-    pwgen \
-    vim-common \
-    which
+    pwgen
 
-# Create a non-root user
-RUN echo "$DOCKER_USER ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
-# Use exit command to ignore error if group already exists.
+# Install additional requirements.
+# Install vim-common to get xxd which is required for generating secrets.
+RUN dnf install -y vim-common
+
+# Install which which (lol) is utilitized by the DigitalOcean playbook.
+RUN dnf install -y which
+
+# Create the non-root user and group.
+# Create the group using exit to ignore error if group already exists.
 RUN groupadd --gid=$DOCKER_GID $DOCKER_USER; exit 0
+# Add the user. The Fedora equiv. of the "sudo" group is "wheel".
 RUN useradd --uid=$DOCKER_UID --gid=$DOCKER_GID -m --groups wheel $DOCKER_USER
+# Enable passwordless sudo.
+RUN echo "$DOCKER_USER ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+# Become the user.
 USER $DOCKER_USER
 
 # Switch to the home dir
