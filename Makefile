@@ -38,6 +38,21 @@ build-forem-selfhost:
 
 
 ###############################################################################
+# Copy the secret files automatically generated during the Docker image build
+# process to a local directory called "secrets"
+###############################################################################
+
+extract-secrets:
+	@mkdir -p secrets
+	@docker run --rm -v `pwd`/secrets:/secrets forem-selfhost \
+	/bin/bash -c \
+	"cp /home/$(USER)/.ssh/forem{,.pub} "\
+	"/home/$(USER)/selfhost/inventory/forem/setup.yml "\
+	"/home/$(USER)/.forem_selfhost_ansible_vault_password "\
+	"/secrets"
+
+
+###############################################################################
 # Build the DigitalOcean deployment Docker image
 #
 # Create a file in this directory called ".digitalocean-access-token"
