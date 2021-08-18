@@ -31,7 +31,7 @@ make \
 Note that the automatically generated secret values you need to administer your Forem services (e.g. Vault password, `vault_secret_key_base`, etc.)
 and eventually access your deployment machine (e.g. SSH key) now exist exclusively within the Docker image you just created, so you should maybe:
 - not share the Docker image with anyone, lest they get your secretz
-- copy those values out of the image and store them somewhere safe (see "Extracting secrets")
+- copy those values out of the image and store them somewhere safe (see "Extracting the secrets")
 
 ### Extract the secrets
 
