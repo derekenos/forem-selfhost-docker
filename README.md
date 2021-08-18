@@ -53,8 +53,7 @@ setup.yml
 
 ### Deploy to DigitalOcean
 
-[Create an auth token](https://github.com/forem/selfhost/blob/5e5ce60a5df738cd36261c80e94dac917e78868f/README.md#setup-1) 
-and store it in a local (to this repo) file called `.digitalocean-access-token`
+[Create an auth token](https://docs.digitalocean.com/reference/api/create-personal-access-token/) and store it in a local (to this repo) file called `.digitalocean-access-token`
 
 #### Build the DigitalOcean deployment Image
 
