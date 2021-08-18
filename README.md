@@ -44,7 +44,6 @@ make extract-secrets
 
 This will create a local directory called `secrets` with the contents:
 ```
-$ ls secrets/ -aF | grep -v /$
 forem
 forem.pub
 .forem_selfhost_ansible_vault_password
