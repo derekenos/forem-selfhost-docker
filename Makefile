@@ -106,6 +106,7 @@ digitalocean_podman_logs = \
 ###############################################################################
 # Show DigitalOcean Droplet IP
 ###############################################################################
+
 digitalocean-ip:
 	@echo $(call digitalocean_get_ip)
 
@@ -113,6 +114,7 @@ digitalocean-ip:
 ###############################################################################
 # SSH into the DigitalOcean Droplet
 ###############################################################################
+
 digitalocean-shell:
 	@$(call digitalocean_ssh_command)
 
@@ -120,6 +122,7 @@ digitalocean-shell:
 ###############################################################################
 # Connect to the DigitalOcean Droplet PostgreSQL DB
 ###############################################################################
+
 digitalocean-db-shell:
 	@$(call digitalocean_ssh_command,\
 	$(call digitalocean_podman_exec,"postgres","postgres","psql -Uforem_production"))
@@ -128,17 +131,23 @@ digitalocean-db-shell:
 ###############################################################################
 # Services admin
 ###############################################################################
+
 # Status
 digitalocean-service-status:
 	@$(call digitalocean_ssh_command, "sudo systemctl list-units forem*")
 
-# Restart
-digitalocean-service-forem-restart:
+# Restarts
+digitalocean-service-restart-forem:
 	@$(call digitalocean_ssh_command, "sudo systemctl restart forem")
 
+digitalocean-service-restart-traefik:
+	@$(call digitalocean_ssh_command, "sudo systemctl restart forem-traefik")
+
+
 ###############################################################################
-# Podman admin
+# Container utilities
 ###############################################################################
+
 # List containers
 digitalocean-container-list:
 	@$(call digitalocean_ssh_command, "sudo podman ps")
