@@ -75,3 +75,36 @@ build-forem-selfhost-digitalocean:
 
 deploy-to-digitalocean:
 	@docker run forem-selfhost-digitalocean
+
+# Helper to return the public IP of the DigitalOcean Droplet tagged "forem"
+digitalocean_get_ip = \
+	`docker run forem-selfhost-digitalocean \
+     doctl compute droplet list --tag-name forem --no-header --format PublicIPv4`
+
+# Helper that returns the command for SSHing into the DigitalOcean Droplet.
+digitalocean_ssh_command = \
+	docker run -it forem-selfhost \
+	ssh -t -o "StrictHostKeyChecking=no" -i /home/$(USER)/.ssh/forem \
+	core@$(call digitalocean_get_ip) $(1)
+
+
+###############################################################################
+# Show DigitalOcean Droplet IP
+###############################################################################
+digitalocean-ip:
+	@echo $(call digitalocean_get_ip)
+
+
+###############################################################################
+# SSH into the DigitalOcean Droplet
+###############################################################################
+digitalocean-shell:
+	@$(call digitalocean_ssh_command)
+
+
+###############################################################################
+# Connect to the DigitalOcean Droplet PostgreSQL DB
+###############################################################################
+digitalocean-db:
+	@$(call digitalocean_ssh_command,\
+	"sudo podman exec -u postgres -it \$$(sudo podman ps -q -f name=postgres) psql -Uforem_production")
