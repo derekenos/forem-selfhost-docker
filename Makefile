@@ -92,12 +92,12 @@ digitalocean_ssh_command = \
 	ssh -t -o "StrictHostKeyChecking=no" -i /home/$(USER)/.ssh/forem \
 	core@$(call digitalocean_get_ip) $(1)
 
-# Return a command to execute a command within a container
+# Return the command to execute a command within a container
 # args: ( <user>, <container-name>, <command> )
 digitalocean_podman_exec = \
   "sudo podman exec -u $1 -it \$$(sudo podman ps -q -f name=$2) $3"
 
-# Return a command to execute a command within a container
+# Return the command to execute a command within a container
 # args: ( <container-name>, )
 digitalocean_podman_logs = \
   "sudo podman logs -f \$$(sudo podman ps -q -f name=$1)"
@@ -136,38 +136,45 @@ digitalocean-service-status:
 digitalocean-service-forem-restart:
 	@$(call digitalocean_ssh_command, "sudo systemctl restart forem")
 
-# Logs
-digitalocean-service-imgproxy-logs:
+###############################################################################
+# Podman admin
+###############################################################################
+# List containers
+digitalocean-container-list:
+	@$(call digitalocean_ssh_command, "sudo podman ps")
+
+# Tail container logs
+digitalocean-container-imgproxy-logs:
 	@$(call digitalocean_ssh_command,\
 	$(call digitalocean_podman_logs,"imgproxy"))\
 	|| exit 0
 
-digitalocean-service-openresty-logs:
+digitalocean-container-openresty-logs:
 	@$(call digitalocean_ssh_command,\
 	$(call digitalocean_podman_logs,"openresty"))\
 	|| exit 0
 
-digitalocean-service-postgres-logs:
+digitalocean-container-postgres-logs:
 	@$(call digitalocean_ssh_command,\
 	$(call digitalocean_podman_logs,"postgres"))\
 	|| exit 0
 
-digitalocean-service-rails-logs:
+digitalocean-container-rails-logs:
 	@$(call digitalocean_ssh_command,\
 	$(call digitalocean_podman_logs,"rails"))\
 	|| exit 0
 
-digitalocean-service-redis-logs:
+digitalocean-container-redis-logs:
 	@$(call digitalocean_ssh_command,\
 	$(call digitalocean_podman_logs,"redis"))\
 	|| exit 0
 
-digitalocean-service-traefik-logs:
+digitalocean-container-traefik-logs:
 	@$(call digitalocean_ssh_command,\
 	$(call digitalocean_podman_logs,"traefik"))\
 	|| exit 0
 
-digitalocean-service-worker-logs:
+digitalocean-container-worker-logs:
 	@$(call digitalocean_ssh_command,\
 	$(call digitalocean_podman_logs,"worker"))\
 	|| exit 0
