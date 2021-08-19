@@ -75,3 +75,115 @@ build-forem-selfhost-digitalocean:
 
 deploy-to-digitalocean:
 	@docker run forem-selfhost-digitalocean
+
+
+###############################################################################
+# DigitalOcean helpers
+###############################################################################
+
+# Return the public IP of the DigitalOcean Droplet tagged "forem"
+digitalocean_get_ip = \
+	`docker run forem-selfhost-digitalocean \
+     doctl compute droplet list --tag-name forem --no-header --format PublicIPv4`
+
+# Return the command for SSHing into the DigitalOcean Droplet
+digitalocean_ssh_command = \
+	docker run -it forem-selfhost \
+	ssh -t -o "StrictHostKeyChecking=no" -i /home/$(USER)/.ssh/forem \
+	core@$(call digitalocean_get_ip) $(1)
+
+# Return the command to execute a command within a container
+# args: ( <user>, <container-name>, <command> )
+digitalocean_podman_exec = \
+  "sudo podman exec -u $1 -it \$$(sudo podman ps -q -f name=$2) $3"
+
+# Return the command to execute a command within a container
+# args: ( <container-name>, )
+digitalocean_podman_logs = \
+  "sudo podman logs -f \$$(sudo podman ps -q -f name=$1)"
+
+
+###############################################################################
+# Show DigitalOcean Droplet IP
+###############################################################################
+
+digitalocean-ip:
+	@echo $(call digitalocean_get_ip)
+
+
+###############################################################################
+# SSH into the DigitalOcean Droplet
+###############################################################################
+
+digitalocean-shell:
+	@$(call digitalocean_ssh_command)
+
+
+###############################################################################
+# Connect to the DigitalOcean Droplet PostgreSQL DB
+###############################################################################
+
+digitalocean-db-shell:
+	@$(call digitalocean_ssh_command,\
+	$(call digitalocean_podman_exec,"postgres","postgres","psql -Uforem_production"))
+
+
+###############################################################################
+# Services admin
+###############################################################################
+
+# Status
+digitalocean-service-status:
+	@$(call digitalocean_ssh_command, "sudo systemctl list-units forem*")
+
+# Restarts
+digitalocean-service-restart-forem:
+	@$(call digitalocean_ssh_command, "sudo systemctl restart forem")
+
+digitalocean-service-restart-traefik:
+	@$(call digitalocean_ssh_command, "sudo systemctl restart forem-traefik")
+
+
+###############################################################################
+# Container utilities
+###############################################################################
+
+# List containers
+digitalocean-container-list:
+	@$(call digitalocean_ssh_command, "sudo podman ps")
+
+# Tail container logs
+digitalocean-container-imgproxy-logs:
+	@$(call digitalocean_ssh_command,\
+	$(call digitalocean_podman_logs,"imgproxy"))\
+	|| exit 0
+
+digitalocean-container-openresty-logs:
+	@$(call digitalocean_ssh_command,\
+	$(call digitalocean_podman_logs,"openresty"))\
+	|| exit 0
+
+digitalocean-container-postgres-logs:
+	@$(call digitalocean_ssh_command,\
+	$(call digitalocean_podman_logs,"postgres"))\
+	|| exit 0
+
+digitalocean-container-rails-logs:
+	@$(call digitalocean_ssh_command,\
+	$(call digitalocean_podman_logs,"rails"))\
+	|| exit 0
+
+digitalocean-container-redis-logs:
+	@$(call digitalocean_ssh_command,\
+	$(call digitalocean_podman_logs,"redis"))\
+	|| exit 0
+
+digitalocean-container-traefik-logs:
+	@$(call digitalocean_ssh_command,\
+	$(call digitalocean_podman_logs,"traefik"))\
+	|| exit 0
+
+digitalocean-container-worker-logs:
+	@$(call digitalocean_ssh_command,\
+	$(call digitalocean_podman_logs,"worker"))\
+	|| exit 0
