@@ -105,6 +105,13 @@ digitalocean-shell:
 ###############################################################################
 # Connect to the DigitalOcean Droplet PostgreSQL DB
 ###############################################################################
-digitalocean-db:
+digitalocean-db-shell:
 	@$(call digitalocean_ssh_command,\
 	"sudo podman exec -u postgres -it \$$(sudo podman ps -q -f name=postgres) psql -Uforem_production")
+
+
+###############################################################################
+# Restart the DigitalOcean forem service
+###############################################################################
+digitalocean-restart-forem:
+	@$(call digitalocean_ssh_command, "sudo systemctl restart forem")
