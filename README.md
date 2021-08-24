@@ -12,13 +12,17 @@ Developed using `Make 4.1` and `Docker 20.10.5` on `Ubuntu 18.04`
 
 ### Build the Docker Image
 
+Replace the `<...>`s with your own values and execute this to build the Docker image:
+
 ```
 make \
-  -e FOREM_DOMAIN_NAME=example.com \
-  -e FOREM_SUBDOMAIN_NAME=community \
-  -e FOREM_DEFAULT_EMAIL=admin@example.com \
+  -e FOREM_DOMAIN_NAME=<DOMAIN_NAME> \
+  -e FOREM_SUBDOMAIN_NAME=<SUBDOMAIN_NAME_OR_BLANK> \
+  -e FOREM_DEFAULT_EMAIL=<EMAIL_ADDRESS> \
   build-forem-selfhost
 ```
+
+See the [Makefile](https://github.com/derekenos/forem-selfhost-docker/blob/main/Makefile) for more information about the `build-forem-selfhost` target.
 
 #### During the Dockerfile build:
 
