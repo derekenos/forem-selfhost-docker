@@ -36,8 +36,10 @@ RUN dnf install -y which
 # Create the non-root user and group.
 # Create the group using exit to ignore error if group already exists.
 RUN groupadd --gid=$DOCKER_GID $DOCKER_USER; exit 0
-# Add the user. The Fedora equiv. of the "sudo" group is "wheel".
-RUN useradd --uid=$DOCKER_UID --gid=$DOCKER_GID -m --groups wheel $DOCKER_USER
+# Add the user if not "root". The Fedora equiv. of the "sudo" group is "wheel".
+RUN if [ "$DOCKER_USER" != "root" ]; then \
+      useradd --uid=$DOCKER_UID --gid=$DOCKER_GID -m --groups wheel $DOCKER_USER; \
+    fi
 # Enable passwordless sudo.
 RUN echo "$DOCKER_USER ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 # Become the user.
